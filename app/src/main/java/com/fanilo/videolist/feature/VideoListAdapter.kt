@@ -49,7 +49,9 @@ class VideoListAdapter(private val context: Context) : RecyclerView.Adapter<Vide
         }
     }
 
-    fun playVideo() {
+    fun playVideo(currentPosition: Int, reyclerView: RecyclerView) {
+        val holder = reyclerView.findViewHolderForLayoutPosition(currentPosition)
+        (holder as ViewHolder).bindPlayer()
         player!!.prepare()
     }
 
@@ -69,9 +71,12 @@ class VideoListAdapter(private val context: Context) : RecyclerView.Adapter<Vide
 
         fun bindTo(item: VideoViewState) {
             title.text = item.title
-            playerView.player = player
 
             initializePlayer(item.url)
+        }
+
+        fun bindPlayer() {
+            playerView.player = player
         }
     }
 }

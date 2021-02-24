@@ -49,7 +49,10 @@ class HomeActivity : DaggerAppCompatActivity() {
 
                 if (newState == SCROLL_STATE_SETTLING || newState == SCROLL_STATE_IDLE) {
                     Timber.d("[TOTO] PLAY")
-                    adapter.playVideo()
+
+                    val position = (recyclerView.layoutManager as LinearLayoutManager)
+                        .findFirstVisibleItemPosition()
+                    adapter.playVideo(position, recyclerView)
                 }
             }
 
@@ -58,7 +61,9 @@ class HomeActivity : DaggerAppCompatActivity() {
                 Timber.d("Scroll State onScrolled $dx $dy")
                 Timber.d("[TOTO] PLAY")
                 if (dx == dy) {
-                    adapter.playVideo()
+                    val position = (recyclerView.layoutManager as LinearLayoutManager)
+                        .findFirstVisibleItemPosition()
+                    adapter.playVideo(position, recyclerView)
                 }
             }
         })
