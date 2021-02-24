@@ -11,10 +11,11 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.util.MimeTypes
+import timber.log.Timber
 
 class VideoListAdapter(private val context: Context) : RecyclerView.Adapter<VideoListAdapter.ViewHolder>() {
 
-    private var player: SimpleExoPlayer? = null
+    private var exoPlayer: SimpleExoPlayer? = null
 
     private val videoItems: MutableList<VideoViewState> = mutableListOf()
 
@@ -22,9 +23,15 @@ class VideoListAdapter(private val context: Context) : RecyclerView.Adapter<Vide
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.video_item_layout, parent, false)
 
-        player = SimpleExoPlayer.Builder(context).build()
+        buildPlayer()
 
         return ViewHolder(view)
+    }
+
+    private fun buildPlayer() {
+        if (exoPlayer == null) {
+            exoPlayer = SimpleExoPlayer.Builder(context).build()
+        }
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -39,44 +46,44 @@ class VideoListAdapter(private val context: Context) : RecyclerView.Adapter<Vide
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
-        //player?.release()
+        Timber.d("[TOTO]  recycling")
+        holder.mediaItem = null
+        holder.playerView.player = null
         super.onViewRecycled(holder)
     }
 
     fun stopPlayer() {
-        player?.let {
-            player!!.stop()
+        exoPlayer?.let {
+            exoPlayer!!.stop()
         }
     }
 
     fun playVideo(currentPosition: Int, reyclerView: RecyclerView) {
         val holder = reyclerView.findViewHolderForLayoutPosition(currentPosition)
         (holder as ViewHolder).bindPlayer()
-        player!!.prepare()
+        exoPlayer!!.prepare()
     }
 
-    private fun initializePlayer(url: String) {
-        val mediaItem: MediaItem = MediaItem.Builder()
-            .setUri(url)
-            .setMimeType(MimeTypes.APPLICATION_MP4)
-            .build()
-        player!!.setMediaItem(mediaItem)
-    }
+    private fun initializePlayer(url: String) = MediaItem.Builder()
+        .setUri(url)
+        .setMimeType(MimeTypes.APPLICATION_MP4)
+        .build()
 
     override fun getItemCount(): Int = videoItems.size
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title = itemView.findViewById<TextView>(R.id.videoTitle)
         val playerView = itemView.findViewById<PlayerView>(R.id.videoPayer)
+        var mediaItem : MediaItem? = null
 
         fun bindTo(item: VideoViewState) {
             title.text = item.title
-
-            initializePlayer(item.url)
+            mediaItem = initializePlayer(item.url)
         }
 
         fun bindPlayer() {
-            playerView.player = player
+            playerView.player = exoPlayer
+            exoPlayer!!.setMediaItem(mediaItem!!)
         }
     }
 }

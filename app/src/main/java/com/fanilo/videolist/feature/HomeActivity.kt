@@ -47,22 +47,22 @@ class HomeActivity : DaggerAppCompatActivity() {
                     adapter.stopPlayer()
                 }
 
-                if (newState == SCROLL_STATE_SETTLING || newState == SCROLL_STATE_IDLE) {
-                    Timber.d("[TOTO] PLAY")
-
+                if (newState == SCROLL_STATE_IDLE) {
                     val position = (recyclerView.layoutManager as LinearLayoutManager)
                         .findFirstVisibleItemPosition()
+
+                    Timber.d("[TOTO] PLAY $position")
+
                     adapter.playVideo(position, recyclerView)
                 }
             }
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                Timber.d("Scroll State onScrolled $dx $dy")
-                Timber.d("[TOTO] PLAY")
                 if (dx == dy) {
+                    Timber.d("[TOTO] PLAY GO ")
                     val position = (recyclerView.layoutManager as LinearLayoutManager)
-                        .findFirstVisibleItemPosition()
+                        .findFirstCompletelyVisibleItemPosition()
                     adapter.playVideo(position, recyclerView)
                 }
             }
