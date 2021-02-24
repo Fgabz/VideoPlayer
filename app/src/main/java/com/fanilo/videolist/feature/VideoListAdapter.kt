@@ -52,9 +52,12 @@ class VideoListAdapter(private val context: Context) : RecyclerView.Adapter<Vide
         super.onViewRecycled(holder)
     }
 
-    fun stopPlayer() {
+    fun stopPlayer(position: Int, recyclerView: RecyclerView) {
+        val holder = recyclerView.findViewHolderForLayoutPosition(position)
+        (holder as ViewHolder).playerView.player = null
         exoPlayer?.let {
             exoPlayer!!.stop()
+
         }
     }
 
@@ -64,7 +67,7 @@ class VideoListAdapter(private val context: Context) : RecyclerView.Adapter<Vide
         exoPlayer!!.prepare()
     }
 
-    private fun initializePlayer(url: String) = MediaItem.Builder()
+    private fun initializeMedia(url: String) = MediaItem.Builder()
         .setUri(url)
         .setMimeType(MimeTypes.APPLICATION_MP4)
         .build()
@@ -77,8 +80,9 @@ class VideoListAdapter(private val context: Context) : RecyclerView.Adapter<Vide
         var mediaItem : MediaItem? = null
 
         fun bindTo(item: VideoViewState) {
+            Timber.d("[TOTO] bindto")
             title.text = item.title
-            mediaItem = initializePlayer(item.url)
+            mediaItem = initializeMedia(item.url)
         }
 
         fun bindPlayer() {

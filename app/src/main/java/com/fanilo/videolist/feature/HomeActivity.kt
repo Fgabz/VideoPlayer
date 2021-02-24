@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING
 import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
-import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_SETTLING
 import com.fanilo.videolist.R
 import com.fanilo.videolist.di.IDaggerFactoryViewModel
 import dagger.android.support.DaggerAppCompatActivity
@@ -43,8 +42,10 @@ class HomeActivity : DaggerAppCompatActivity() {
                 super.onScrollStateChanged(recyclerView, newState)
                 Timber.d("Scroll State $newState")
                 if (newState == SCROLL_STATE_DRAGGING) {
+                    val position = (recyclerView.layoutManager as LinearLayoutManager)
+                        .findFirstVisibleItemPosition()
                     Timber.d("[TOTO] STOP")
-                    adapter.stopPlayer()
+                    adapter.stopPlayer(position, recyclerView)
                 }
 
                 if (newState == SCROLL_STATE_IDLE) {
